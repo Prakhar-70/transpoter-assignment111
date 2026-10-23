@@ -1,129 +1,58 @@
 # Transporter Assignment on Lanes
 
-## Overview
+A Spring Boot backend application that assigns transporters to trade lanes based on transporter quotes and a maximum transporter limit. The application exposes REST APIs for submitting quote data and calculating lane assignments.
 
-The Transporter Assignment application is a Spring Boot REST API that assigns transporters to lanes based on their quoted prices.
+## 🔗 Project Links
 
-The application aims to:
-- Cover every lane with an available transporter.
-- Minimize the total transportation cost.
-- Maximize the number of distinct transporters used without exceeding the specified limit.
-- Validate input data and return meaningful error messages when an assignment cannot be completed.
+- **GitHub Repository:** https://github.com/Prakhar-70/transpoter-assignment111
+- **Live Backend API:** https://transpoter-assignment.onrender.com
+- **Swagger API Documentation:** https://transpoter-assignment.onrender.com/swagger-ui/index.html
+- **Loom Demo Video:** https://www.loom.com/share/48a72fe965514916bb38afc8c361e933
 
-## Technologies Used
+## 📌 Project Overview
 
-- Java 27
-- Spring Boot
-- Spring Web MVC
-- Jakarta Validation dependency
-- Maven
-- JUnit 5
-- IntelliJ IDEA
-- Postman
+The Transporter Assignment application accepts trade lane information and transporter quotes, then calculates assignments using the available quote data and the specified maximum number of transporters.
 
-## Project Structure
+The application provides endpoints to submit input data and retrieve the calculated assignment, including lane-wise transporter allocations, selected transporter IDs, and total cost.
 
-```text
-src
-├── main
-│   └── java
-│       └── com.example.transpoter
-│           ├── TranspoterAssignmentApplication.java
-│           ├── controller
-│           │   └── TransporterController.java
-│           ├── service
-│           │   └── AssignmentService.java
-│           ├── dto
-│           │   └── ApiModels.java
-│           └── exception
-│               └── GlobalExceptionHandler.java
-└── test
-    └── java
-        └── com.example.transpoter
-            └── service
-                └── AssignmentServiceTest.java
-```
+## ✨ Features
 
-## How to Run the Application
+- RESTful API development using Spring Boot
+- Input data submission and processing
+- Transporter assignment across trade lanes
+- Assignment calculation based on a maximum transporter limit
+- Total assignment cost calculation
+- Input validation and exception handling
+- Swagger UI for API documentation and testing
+- Docker configuration for deployment
 
-### Prerequisites
+## 🛠️ Tech Stack
 
-- Java 17 or later
-- IntelliJ IDEA or another Java IDE
-- Maven Wrapper included in the project
+- **Language:** Java
+- **Backend Framework:** Spring Boot
+- **Build Tool:** Maven
+- **API Documentation:** Swagger / OpenAPI
+- **Deployment:** Render
+- **Containerization:** Docker
 
-### Steps
+## 🏗️ Project Architecture
 
-1. Open the project in IntelliJ IDEA.
-2. Allow Maven to load the project dependencies.
-3. Open `TranspoterAssignmentApplication.java`.
-4. Run the main application class.
-5. Confirm that the application starts on port `8080`.
+The application follows a layered architecture:
 
-Base URL:
+- **Controller Layer:** Exposes REST endpoints and handles incoming requests.
+- **Service Layer:** Implements business logic and assignment calculations.
+- **Model / DTO Layer:** Represents input data, requests, and responses.
+- **Exception Handling:** Handles invalid inputs and assignment errors.
 
-```text
-http://localhost:8080
-```
+## 🚀 API Endpoints
 
-## API Endpoints
+### 1. Submit Transporter Input Data
 
-### 1. Submit Lane and Transporter Data
+**Endpoint:** `POST /api/v1/transporters/input`
 
-**Endpoint**
+Accepts trade lane details and transporter quotes.
 
-```http
-POST /api/v1/transporters/input
-```
-
-This endpoint accepts lane information, transporter details, and transporter quotes for individual lanes.
-
-**Sample request**
-
-```json
-{
-  "lanes": [
-    {
-      "id": 1,
-      "origin": "Delhi",
-      "destination": "Mumbai"
-    },
-    {
-      "id": 2,
-      "origin": "Mumbai",
-      "destination": "Pune"
-    }
-  ],
-  "transporters": [
-    {
-      "id": 101,
-      "name": "Transporter A",
-      "laneQuotes": [
-        {
-          "laneId": 1,
-          "quote": 5000
-        },
-        {
-          "laneId": 2,
-          "quote": 3000
-        }
-      ]
-    },
-    {
-      "id": 102,
-      "name": "Transporter B",
-      "laneQuotes": [
-        {
-          "laneId": 1,
-          "quote": 4500
-        }
-      ]
-    }
-  ]
-}
-```
-
-**Sample success response**
+**Example response:**
 
 ```json
 {
@@ -134,100 +63,129 @@ This endpoint accepts lane information, transporter details, and transporter quo
 
 ### 2. Calculate Transporter Assignment
 
-**Endpoint**
+**Endpoint:** `POST /api/v1/transporters/assignment`
 
-```http
-POST /api/v1/transporters/assignment
-```
+Calculates transporter assignments using the provided maximum transporter limit.
 
-This endpoint calculates the assignment using the previously submitted input data.
-
-**Sample request**
+**Example request:**
 
 ```json
 {
-  "maxTransporters": 2
+  "maxTransporters": 3
 }
 ```
 
-**Sample response**
+**Example response structure:**
 
 ```json
 {
   "status": "success",
-  "totalCost": 7500,
+  "totalCost": 134876,
   "assignments": [
     {
       "laneId": 1,
-      "transporterId": 102
+      "transporterId": 4
     },
     {
       "laneId": 2,
-      "transporterId": 101
+      "transporterId": 1
     }
   ],
-  "selectedTransporters": [
-    101,
-    102
-  ]
+  "selectedTransporters": [1, 4, 6]
 }
 ```
 
-## Assignment Algorithm
+*Note: The response above illustrates the response structure. The actual cost, lane assignments, and selected transporters depend on the input dataset.*
 
-The application uses dynamic programming with a bitmask to track the transporters selected for an assignment.
+## 🧪 Testing the APIs
 
-For each lane, the algorithm evaluates the available transporter quotes and retains the lowest-cost assignment for each exact set of selected transporters.
+You can test the endpoints through the deployed Swagger interface:
 
-The final result prioritizes:
+**Swagger UI:** https://transpoter-assignment.onrender.com/swagger-ui/index.html
 
-1. Covering every lane.
-2. Using as many distinct transporters as possible, without exceeding `maxTransporters`.
-3. Minimizing the total cost among assignments using the maximum feasible number of transporters.
+1. Open the Swagger UI.
+2. Execute `POST /api/v1/transporters/input` with the transporter quote data in the expected JSON format.
+3. Confirm that the input data is accepted successfully.
+4. Execute `POST /api/v1/transporters/assignment` with a request such as:
 
-If a lane cannot be covered, the application returns an error response instead of an incomplete assignment.
+   ```json
+   {
+     "maxTransporters": 3
+   }
+   ```
 
-## Input Validation and Error Handling
+5. Review the returned total cost, lane assignments, and selected transporter IDs.
 
-The application checks for:
-- Missing lane or transporter data.
-- Empty lane lists.
-- Duplicate or non-positive lane and transporter IDs.
-- Missing lane origins, destinations, or transporter names.
-- Quotes referring to unknown lanes.
-- Duplicate quotes for the same lane and transporter.
-- Negative quotes.
-- Invalid `maxTransporters` values.
-- Lanes that cannot be covered with the available quotes.
+## 📊 Sample Dataset
 
-Errors are returned as JSON responses with an appropriate HTTP status code.
+The project was tested using transporter quote data converted from CSV into JSON.
 
-## Automated Testing
+The dataset used for testing contains:
+- 9 trade lanes
+- 7 transporters
+- 63 transporter quotes
 
-The project includes `AssignmentServiceTest.java` with tests covering:
+The CSV dataset provides the quote values for each transporter across the available lanes.
 
-- Finding a valid low-cost assignment.
-- Maximizing transporter usage within the limit.
-- Handling lanes that cannot be covered.
-- Rejecting a zero transporter limit.
+## ⚙️ Run Locally
 
-**Current test status:** All 4 automated tests passed.
+### Prerequisites
 
-## Sample Dataset Test
+- Java Development Kit (JDK)
+- Maven
+- Git
 
-The application was tested using the supplied CSV dataset containing 9 lanes and 7 transporters.
+### Steps
 
-With `maxTransporters` set to `3`, the application returned:
+1. Clone the repository:
 
-| Result | Value |
-|---|---:|
-| Total cost | 134876 |
-| Selected transporters | 1, 4, 6 |
-| Lanes covered | 9 |
+   ```bash
+   git clone https://github.com/Prakhar-70/transpoter-assignment111.git
+   ```
 
-## Notes
+2. Navigate to the project directory:
 
-- The input data is stored in application memory.
-- Submit the input data before requesting an assignment.
-- Restarting the application clears the stored input.
-- The algorithm is designed for a modest number of transporters; its bitmask-based state space grows exponentially as the number of transporters increases.
+   ```bash
+   cd transpoter-assignment111/transpoter
+   ```
+
+3. Build the project:
+
+   ```bash
+   mvn clean package
+   ```
+
+4. Run the application:
+
+   ```bash
+   mvn spring-boot:run
+   ```
+
+5. Open the Swagger UI locally, if enabled:
+
+   http://localhost:8080/swagger-ui/index.html
+
+## ☁️ Deployment
+
+The backend is deployed on Render.
+
+- **Application URL:** https://transpoter-assignment.onrender.com
+- **API Documentation:** https://transpoter-assignment.onrender.com/swagger-ui/index.html
+
+Docker configuration is included in the repository for containerized deployment.
+
+## 🎥 Demo Video
+
+Watch the project walkthrough to see the application structure, deployed APIs, and API testing:
+
+**Loom Demo:** https://www.loom.com/share/48a72fe965514916bb38afc8c361e933
+
+## 👨‍💻 Author
+
+**Prakhar Pandey**
+
+- GitHub: https://github.com/Prakhar-70
+
+---
+
+*This project demonstrates backend API development, layered architecture, transporter assignment logic, input validation, exception handling, and deployment using Spring Boot.*
